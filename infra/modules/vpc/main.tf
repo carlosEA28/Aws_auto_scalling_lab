@@ -1,6 +1,6 @@
-# ------------------------------------------------------------------------------
+
 # 1. VPC & INTERNET GATEWAY
-# ------------------------------------------------------------------------------
+
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
@@ -21,9 +21,9 @@ resource "aws_internet_gateway" "gw" {
   }
 }
 
-# ------------------------------------------------------------------------------
+
 # 2. SUB-REDES PÚBLICAS
-# ------------------------------------------------------------------------------
+
 resource "aws_subnet" "public_az1" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.1.0/24"
@@ -48,9 +48,9 @@ resource "aws_subnet" "public_az2" {
   }
 }
 
-# ------------------------------------------------------------------------------
+
 # 3. SUB-REDES PRIVADAS
-# ------------------------------------------------------------------------------
+
 resource "aws_subnet" "private_az1" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.3.0/24"
@@ -73,9 +73,9 @@ resource "aws_subnet" "private_az2" {
   }
 }
 
-# ------------------------------------------------------------------------------
+
 # 4. ELASTIC IPs & NAT GATEWAYS (Para saída das Sub-redes Privadas)
-# ------------------------------------------------------------------------------
+
 resource "aws_eip" "nat_az1" {
   domain     = "vpc"
   depends_on = [aws_internet_gateway.gw]
@@ -120,9 +120,9 @@ resource "aws_nat_gateway" "nat_gw_az2" {
   depends_on = [aws_internet_gateway.gw]
 }
 
-# ------------------------------------------------------------------------------
+
 # 5. ROUTE TABLES & ASSOCIAÇÕES - PÚBLICAS
-# ------------------------------------------------------------------------------
+
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
 
@@ -147,9 +147,8 @@ resource "aws_route_table_association" "public_az2" {
   route_table_id = aws_route_table.public.id
 }
 
-# ------------------------------------------------------------------------------
 # 6. ROUTE TABLES & ASSOCIAÇÕES - PRIVADAS (Roteando pelo NAT Gateway)
-# ------------------------------------------------------------------------------
+
 resource "aws_route_table" "private_az1" {
   vpc_id = aws_vpc.main.id
 
