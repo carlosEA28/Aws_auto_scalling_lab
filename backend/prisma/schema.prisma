@@ -1,0 +1,38 @@
+// Prisma schema — Plataforma de venda de ingressos (demo)
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id        String     @id @default(uuid())
+  name      String
+  location  String
+  date      DateTime
+  capacity  Int
+  price     Decimal    @db.Decimal(10, 2)
+  purchases Purchase[]
+  createdAt DateTime   @default(now())
+
+  @@index([date])
+}
+
+model Purchase {
+  id           String   @id @default(uuid())
+  eventId      String
+  customerName String
+  quantity     Int
+  totalPrice   Decimal  @db.Decimal(10, 2)
+  createdAt    DateTime @default(now())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([createdAt])
+}
