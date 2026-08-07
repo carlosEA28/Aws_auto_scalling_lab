@@ -3,3 +3,9 @@ variable "postgres_password" {
   type        = string
   sensitive   = true
 }
+
+variable "ec2_key_name" {
+  description = "Nome da key pair para acesso SSH às instâncias EC2"
+  type        = string
+  default     = "user1"
+}
