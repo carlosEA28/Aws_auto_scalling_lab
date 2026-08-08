@@ -46,6 +46,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: sa-east-1
 
+      - name: Check ECR repository exists
+        run: |
+          if ! aws ecr describe-repositories --repository-names ticket-api >/dev/null 2>&1; then
+            echo "::error::Repositório ECR 'ticket-api' não existe. Rode 'terraform apply' na pasta infra/ para criá-lo antes do primeiro deploy."
+            exit 1
+          fi
+          echo "Repositório ECR 'ticket-api' encontrado."
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
@@ -56,8 +64,14 @@ jobs:
         run: |
           ECR_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
           IMAGE_TAG="latest"
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG backend
+          IMAGE_TAG_SHA="git-${GITHUB_SHA}"
+
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+                       -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG_SHA \
+                       backend
+
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG_SHA
 
       - name: Refresh Auto Scaling instances
         run: |

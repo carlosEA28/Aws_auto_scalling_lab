@@ -19,15 +19,17 @@ module "ecr" {
 }
 
 module "ec2" {
-  source      = "./modules/ec2"
-  image_url   = module.ecr.repository_url
-  db_endpoint = module.rds.db_endpoint
-  db_name     = module.rds.db_name
-  db_user     = module.rds.db_username
-  db_password = var.postgres_password
-  subnet_ids  = module.vpc.private_subnet_ids
-  sg_ids      = [module.security_groups.ec2_security_group_id]
-  key_name    = var.ec2_key_name
+  source       = "./modules/ec2"
+  image_url    = module.ecr.repository_url
+  ecr_registry = module.ecr.registry
+  image_tag    = var.ecr_image_tag
+  db_endpoint  = module.rds.db_endpoint
+  db_name      = module.rds.db_name
+  db_user      = module.rds.db_username
+  db_password  = var.postgres_password
+  subnet_ids   = module.vpc.private_subnet_ids
+  sg_ids       = [module.security_groups.ec2_security_group_id]
+  key_name     = var.ec2_key_name
 }
 
 module "alb" {

@@ -9,3 +9,9 @@ variable "ec2_key_name" {
   type        = string
   default     = "user1"
 }
+
+variable "ecr_image_tag" {
+  description = "Tag da imagem Docker no ECR que as EC2 devem baixar"
+  type        = string
+  default     = "latest"
+}

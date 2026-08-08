@@ -3,6 +3,17 @@ variable "image_url" {
   type        = string
 }
 
+variable "ecr_registry" {
+  description = "Endpoint do registry ECR (apenas host, sem o nome do repositório)"
+  type        = string
+}
+
+variable "image_tag" {
+  description = "Tag da imagem Docker que a EC2 deve baixar"
+  type        = string
+  default     = "latest"
+}
+
 variable "db_endpoint" {
   description = "Endpoint do RDS (host:port)"
   type        = string

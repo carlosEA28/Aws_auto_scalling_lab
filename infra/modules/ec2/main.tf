@@ -59,11 +59,13 @@ resource "aws_launch_template" "this" {
   vpc_security_group_ids = var.sg_ids
 
   user_data = base64encode(templatefile("${path.module}/user_data.sh.tpl", {
-    image_url   = var.image_url
-    db_endpoint = var.db_endpoint
-    db_name     = var.db_name
-    db_user     = var.db_user
-    db_password = var.db_password
+    image_url    = var.image_url
+    ecr_registry = var.ecr_registry
+    image_tag    = var.image_tag
+    db_endpoint  = var.db_endpoint
+    db_name      = var.db_name
+    db_user      = var.db_user
+    db_password  = var.db_password
   }))
 
   tag_specifications {
