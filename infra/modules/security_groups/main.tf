@@ -34,7 +34,7 @@ resource "aws_vpc_security_group_egress_rule" "alb_to_ec2" {
 
 resource "aws_security_group" "ec2" {
   name        = "ec2-sg"
-  description = "Security Group para as instâncias EC2"
+  description = "Security Group para as instancias EC2"
   vpc_id      = var.vpc_id
 
   tags = {
