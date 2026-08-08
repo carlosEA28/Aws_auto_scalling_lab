@@ -5,10 +5,8 @@ resource "aws_lb" "alb" {
   security_groups    = [var.security_group_id]
   subnets            = var.subnet_ids
 
-  enable_deletion_protection = true
-
   tags = {
-    IaC = true
+    IaC  = true
     Name = "ticket-api-alb"
   }
 }
@@ -50,5 +48,5 @@ resource "aws_lb_listener" "http" {
 resource "aws_autoscaling_attachment" "api" {
   count                  = length(var.target_asg_ids)
   autoscaling_group_name = var.target_asg_ids[count.index]
-  lb_target_group_arn     = aws_lb_target_group.api.arn
+  lb_target_group_arn    = aws_lb_target_group.api.arn
 }

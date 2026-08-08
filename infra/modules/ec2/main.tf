@@ -79,12 +79,12 @@ resource "aws_launch_template" "this" {
 # AUTO SCALING GROUP (multi-AZ nas subnets privadas)
 
 resource "aws_autoscaling_group" "this" {
-  name               = "ticket-api-asg"
-  min_size           = var.min_size
-  max_size           = var.max_size
-  desired_capacity   = var.desired_size
-  vpc_zone_identifier = var.subnet_ids
-  health_check_type  = "EC2"
+  name                      = "ticket-api-asg"
+  min_size                  = var.min_size
+  max_size                  = var.max_size
+  desired_capacity          = var.desired_size
+  vpc_zone_identifier       = var.subnet_ids
+  health_check_type         = "ELB"
   health_check_grace_period = 300
 
   launch_template {

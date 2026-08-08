@@ -1,6 +1,6 @@
 
 # 1. SECURITY GROUP - ALB
-#    Permite HTTP/HTTPS da internet e libera egress apontando para as EC2
+#    Permite HTTP da internet e libera egress apontando para as EC2
 
 resource "aws_security_group" "alb" {
   name        = "alb-sg"
@@ -11,14 +11,6 @@ resource "aws_security_group" "alb" {
     Name = "alb-sg"
     IaC  = true
   }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "alb_https" {
-  security_group_id = aws_security_group.alb.id
-  cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol       = "tcp"
-  from_port         = 443
-  to_port           = 443
 }
 
 resource "aws_vpc_security_group_ingress_rule" "alb_http" {

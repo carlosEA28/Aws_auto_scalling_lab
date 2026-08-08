@@ -1,0 +1,4 @@
+postgres_password = "troque-esta-senha"
+
+# Nome da key pair EC2 existente na conta AWS
+ec2_key_name      = "user1"
