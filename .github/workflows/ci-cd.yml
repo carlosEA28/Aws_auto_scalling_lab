@@ -5,16 +5,59 @@ on:
     branches: [main]
 
 jobs:
+  infrastructure:
+    name: Terraform
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: sa-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: infra
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: infra
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: infra
+        env:
+          TF_VAR_postgres_password: ${{ secrets.POSTGRES_PASSWORD }}
+        run: terraform plan
+
+      - name: Terraform Apply
+        working-directory: infra
+        env:
+          TF_VAR_postgres_password: ${{ secrets.POSTGRES_PASSWORD }}
+        run: terraform apply -auto-approve
+
   build:
     name: Build
+    needs: infrastructure
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: backend
-    steps:
-      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
@@ -33,11 +76,13 @@ jobs:
         run: npm run build
 
   deploy:
-    name: Docker build & Deploy
+    name: Docker Build & Deploy
     needs: build
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -46,32 +91,24 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: sa-east-1
 
-      - name: Check ECR repository exists
-        run: |
-          if ! aws ecr describe-repositories --repository-names ticket-api >/dev/null 2>&1; then
-            echo "::error::Repositório ECR 'ticket-api' não existe. Rode 'terraform apply' na pasta infra/ para criá-lo antes do primeiro deploy."
-            exit 1
-          fi
-          echo "Repositório ECR 'ticket-api' encontrado."
-
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag and push image to ECR
+      - name: Build and push Docker image
         env:
           ECR_REPOSITORY: ticket-api
+          IMAGE_TAG: git-${{ github.sha }}
         run: |
           ECR_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
-          IMAGE_TAG="latest"
-          IMAGE_TAG_SHA="git-${GITHUB_SHA}"
 
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-                       -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG_SHA \
-                       backend
+          docker build \
+            -t "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" \
+            -t "$ECR_REGISTRY/$ECR_REPOSITORY:latest" \
+            backend
 
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG_SHA
+          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:latest"
 
       - name: Refresh Auto Scaling instances
         run: |

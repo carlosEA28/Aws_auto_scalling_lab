@@ -10,5 +10,5 @@ output "repository_name" {
 
 output "registry" {
   description = "Endpoint do registry ECR (sem o nome do repositório)"
-  value       = regexp("^[^/]+", aws_ecr_repository.this.repository_url)
+  value       = regex("^[^/]+", aws_ecr_repository.this.repository_url)
 }
