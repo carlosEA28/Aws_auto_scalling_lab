@@ -50,7 +50,7 @@ resource "aws_launch_template" "this" {
   name_prefix   = "ticket-api-"
   image_id      = data.aws_ami.amazon_linux_2023.id
   instance_type = var.instance_type
-
+  k
   iam_instance_profile {
     name = aws_iam_instance_profile.ec2.name
   }

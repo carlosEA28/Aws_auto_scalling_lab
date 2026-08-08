@@ -20,6 +20,7 @@ module "ecr" {
 
 module "ec2" {
   source       = "./modules/ec2"
+  key_name     = null
   image_url    = module.ecr.repository_url
   ecr_registry = module.ecr.registry
   image_tag    = var.ecr_image_tag
