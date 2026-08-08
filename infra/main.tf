@@ -29,3 +29,11 @@ module "ec2" {
   sg_ids      = [module.security_groups.ec2_security_group_id]
   key_name    = var.ec2_key_name
 }
+
+module "alb" {
+  source             = "./modules/alb"
+  subnet_ids         = module.vpc.public_subnet_ids
+  security_group_id  = module.security_groups.alb_security_group_id
+  vpc_id             = module.vpc.vpc_id
+  target_asg_ids     = [module.ec2.asg_id]
+}
