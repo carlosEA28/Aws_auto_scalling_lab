@@ -29,7 +29,6 @@ module "ec2" {
   db_password  = var.postgres_password
   subnet_ids   = module.vpc.private_subnet_ids
   sg_ids       = [module.security_groups.ec2_security_group_id]
-  key_name     = var.ec2_key_name
 }
 
 module "alb" {
