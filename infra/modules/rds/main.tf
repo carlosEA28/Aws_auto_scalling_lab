@@ -11,7 +11,7 @@ resource "aws_db_subnet_group" "postgres" {
 resource "aws_db_instance" "postgres" {
   allocated_storage       = 10
   db_name                 = "ticketing"
-  instance_class          = "db.t2.micro"
+  instance_class          = "db.t3.micro"
   engine                  = "postgres"
   engine_version          = "15"
   username                = "ticket"
