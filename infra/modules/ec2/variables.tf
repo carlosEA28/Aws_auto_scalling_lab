@@ -53,7 +53,7 @@ variable "key_name" {
 variable "instance_type" {
   description = "Tipo da instância"
   type        = string
-  default     = "t2.micro"
+  default     = "t3.micro"
 }
 
 variable "min_size" {

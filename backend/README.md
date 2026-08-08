@@ -148,7 +148,7 @@ curl "http://localhost:3000/simulate-purchase?cpuMs=1500&queries=10"
   "cpuWorkMs": 1499,
   "dbQueries": 10,
   "eventsInDatabase": 10,
-  "timestamp": "2026-08-06T21:15:42.948Z"
+  "timestamp": "2026-08-06.1:15:42.948Z"
 }
 ```
 
